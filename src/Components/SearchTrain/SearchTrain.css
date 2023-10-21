@@ -1,0 +1,11 @@
+.in-search-train:focus {
+  border: 0.5px solid rgb(0, 0, 0, 0.5);
+  box-shadow: 0 0 2px 0.5px rgb(0, 0, 0, 0.5);
+}
+
+.in-search-train {
+  -webkit-transition: 0.1s;
+  transition: 0.1s;
+  outline: none;
+  border: 0.5px solid rgb(0, 0, 0, 0.2);
+}

@@ -1,0 +1,21 @@
+.login-bg {
+    background-image: url('https://d19qjkjk65tfln.cloudfront.net/img/login-page-bg.svg');
+    background-size: cover;
+    background-position: right bottom;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    background-color: #cfd9d68f;
+}
+
+.in-login:focus{
+    border: 0.2px solid rgb(0, 0, 0, 0.5);
+    box-shadow: 0 0 2px 0.5px rgb(0, 0, 0, 0.5);
+}
+
+.in-login {
+    -webkit-transition: 0.1s;
+    transition: 0.1s;
+    outline: none;
+    border: 0.5px solid white;
+}
