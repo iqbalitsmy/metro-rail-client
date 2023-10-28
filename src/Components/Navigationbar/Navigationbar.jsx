@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
-import Link from '../Link/Link';
+import NavLink from '../NavLink/NavLink';
 import logo from '../../assets/logo/Dhaka Metro Rail -logos_black.png'
+import { UserContext } from '../../AuthProvider/UserProvider';
 
 const Navigationbar = () => {
     const [open, setOpen] = useState(false);
+    const data = useContext(UserContext);
+    console.log(data);
     const routes = [
         {
             id: 1,
@@ -58,11 +61,11 @@ const Navigationbar = () => {
                 ${open ? 'top-20 right-0' : '-top-60 right-0'}`
                     }>
                         {
-                            routes.map(route => <Link
+                            routes.map(route => <NavLink
                                 key={route.id}
                                 route={route}
                             >
-                            </Link>)
+                            </NavLink>)
                         }
                     </ul>
                 </div>
