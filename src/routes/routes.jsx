@@ -4,6 +4,7 @@ import Home from "../Pages/Home/Home";
 import Login from "../Pages/Login/Login";
 import Register from "../Components/Register/Register";
 import ContactUs from "../Components/ContactUs/ContactUs";
+import TrainInformation from "../Components/TrainInformation/TrainInformation";
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/train-information",
-        element: <div>Train Information</div>
+        element: <TrainInformation></TrainInformation>
       },
       {
         path: "/contact-us",

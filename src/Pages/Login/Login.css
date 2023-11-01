@@ -1,11 +1,13 @@
 .login-bg {
-    background-image: url('https://d19qjkjk65tfln.cloudfront.net/img/login-page-bg.svg');
-    background-size: cover;
+    background-image: url('https://png.pngtree.com/png-clipart/20230801/original/pngtree-red-subway-or-metro-train-transportation-transit-speed-vector-picture-image_9209156.png');
+    /* background-image: url('../../assets/bg-red-img.png'); */
+    background-size: fill;
     background-position: right bottom;
-    background-size: 50%;
+    background-size: 35%;
     background-repeat: no-repeat;
     box-sizing: border-box;
-    background-color: #cfd9d68f;
+    background-color: #FFF2F2;
+    opacity: 0.8;
 }
 
 .in-login:focus{

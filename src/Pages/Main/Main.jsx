@@ -6,13 +6,13 @@ import { Outlet } from 'react-router-dom';
 const Main = () => {
     return (
         <>
-            <header className='sticky top-0 z-50 bg-white'>
+            <header className='sticky top-0 z-50'>
                 <Navigationbar></Navigationbar>
             </header>
             <main className='relative'>
                 <Outlet></Outlet>
             </main>
-            <footer className='bg-[#f6f9ff]'>
+            <footer className='bg-[#FFF2F2]'>
                 <Footer></Footer>
             </footer>
 

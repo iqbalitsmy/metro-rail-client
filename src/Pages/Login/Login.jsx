@@ -63,7 +63,7 @@ const Login = () => {
 
     return (
         <main className='login-bg w-full h-screen px-2'>
-            <div className='container flex flex-col justify-center items-center'>
+            <div className='w-full mx-auto container flex flex-col justify-center items-center'>
                 <div className='flex flex-col justify-center items-center mt-8'>
                     <a
                         className='mb-4'
@@ -73,8 +73,8 @@ const Login = () => {
                             <img className='h-full w-auto object-contain' src={logo} alt="" />
                         </figure>
                     </a>
-                    <h1 className='text-3xl font-extrabold mb-4'>Dhaka Railway</h1>
-                    <ul className='text-lg font-medium flex gap-8 text-green-900 mb-4'>
+                    <h1 className='text-3xl font-extrabold mb-4 text-[#f00]'>Dhaka Metro Railway</h1>
+                    <ul className='text-lg font-medium flex gap-8 mb-4'>
                         <li>নিরাপদ</li>
                         <li className='list-disc'>আরামদায়ক</li>
                         <li className='list-disc'>সাশ্রয়ী</li>
@@ -106,12 +106,12 @@ const Login = () => {
                             />
                         </div>
                         <div className='text-center font-semibold text-white'>
-                            <button className='in-login w-full py-2 mb-2 uppercase tracking-wider cursor-pointer bg-green-800 hover:bg-green-700 rounded' type="submit" name="" id="">LOGIN</button>
+                            <button className='in-login w-full py-2 mb-2 uppercase tracking-wider cursor-pointer bg-[#ee0000] hover:bg-[#ff0000] rounded' type="submit" name="" id="">LOGIN</button>
                         </div>
                         <div className='flex flex-col gap-2 justify-center items-center'>
                             <p className='text-gray-400'>OR</p>
                             <Link
-                                className='text-green-800 underline'
+                                className='text-[#ee0000] underline'
                                 to={'/signup'}
                             >
                                 REGISTER
