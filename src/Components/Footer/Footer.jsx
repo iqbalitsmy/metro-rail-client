@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../assets/logo/dhaka_metro_rail -logos_black.png'
+import logo from '../../assets/logo/images.png'
 import './Footer.css'
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

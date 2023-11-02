@@ -5,7 +5,7 @@ import { faPhoneVolume, faShieldHalved, faVideo, faWalkieTalkie } from '@fortawe
 const Facilities = () => {
 
     return (
-        <section className='container mx-auto mb-20 lg:w-8/12'>
+        <section className='container mx-auto mb-20 lg:w-8/12 px-4 md:px-0'>
             <h1 className='text-3xl font-bold mb-4'>Facilities & Equipment</h1>
             <p className='text-[#53565a] mb-5'>Here is all the information you need to know about the facilities and equipment while you are on-board the Metro.</p>
             <div className='grid grid-cols-1 md:grid-cols-3 justify-center gap-5'>

@@ -4,10 +4,10 @@ import './SearchTrain.css'
 const SearchTrain = () => {
 
     return (
-        <section className='container mx-auto mb-16 md:flex justify-center items-center gap-4 '>
+        <section className='container mx-auto mb-16 md:flex justify-center items-center gap-4 px-4 md:px-0'>
             <aside className=''>
-                <form>
-                    <div className='flex flex-col md:flex-row gap-8 mb-4'>
+                <form className='flex flex-col gap-4'>
+                    <div className='flex flex-col md:flex-row gap-4'>
                         <div className='flex flex-col'>
                             <label className='font-medium mb-2' htmlFor="from">From</label>
                             <input
@@ -27,8 +27,8 @@ const SearchTrain = () => {
                             />
                         </div>
                     </div>
-                    <div className='flex flex-col md:flex-row gap-8 mb-4'>
-                        <div className='flex flex-col mb-8 w-full'>
+                    <div className='flex flex-col md:flex-row gap-4'>
+                        <div className='flex flex-col w-full'>
                             <label className='font-medium mb-2' htmlFor="to">Date of Journey</label>
                             <input
                                 className='in-search-train rounded pl-3 py-1 w-full'

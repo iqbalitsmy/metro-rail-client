@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import logo from '../../assets/logo/dhaka_metro_rail -logos_black.png'
+import logo from '../../assets/logo/images.png'
 import { Link, Navigate } from 'react-router-dom';
 import './Login.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -73,12 +73,12 @@ const Login = () => {
                             <img className='h-full w-auto object-contain' src={logo} alt="" />
                         </figure>
                     </a>
-                    <h1 className='text-3xl font-extrabold mb-4 text-[#f00]'>Dhaka Metro Railway</h1>
-                    <ul className='text-lg font-medium flex gap-8 mb-4'>
+                    <h1 className='text-3xl font-extrabold mb-4 text-[#f00]'>Dhaka Metro Rail</h1>
+                    {/* <ul className='text-lg font-medium flex gap-8 mb-4'>
                         <li>নিরাপদ</li>
                         <li className='list-disc'>আরামদায়ক</li>
                         <li className='list-disc'>সাশ্রয়ী</li>
-                    </ul>
+                    </ul> */}
                 </div>
                 <div className='bg-white rounded-lg'>
                     <div className='text-sm flex items-center justify-between shadow-md px-4 py-5'>

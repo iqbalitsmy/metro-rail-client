@@ -2,7 +2,7 @@ import React from 'react';
 
 const PaymentMethod = () => {
     return (
-        <section className='container mx-auto mb-8'>
+        <section className='container mx-auto mb-8 px-4 md:px-0'>
             <hr className='border-t border-gray-400' />
             <div className='my-10 flex justify-center gap-5'>
                 <figure className='h-9'>

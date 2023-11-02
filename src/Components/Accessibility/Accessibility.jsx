@@ -5,7 +5,7 @@ import { faCircleInfo, faElevator, faSignsPost, faTriangleExclamation, faWheelch
 
 const Accessibility = () => {
     return (
-        <section className='container mx-auto mb-16 lg:w-8/12'>
+        <section className='container mx-auto mb-16 lg:w-8/12 px-4 md:px-0'>
             <h1 className='text-3xl font-bold mb-4'>Accessibility</h1>
             <p className='text-[#53565a] mb-4'>Convenience for the commuters has always been a prime focus of the Dhaka Metro service, and in that regard, below are the accessibility services that are available for the metro users:</p>
             <div className='grid grid-cols-1 md:grid-cols-3 justify-center gap-5'>

@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import NavLink from '../NavLink/NavLink';
-import logo from '../../assets/logo/dhaka_metro_rail_logos_white_rs.png'
+import logo from '../../assets/logo/images.png'
+// import logo from '../../assets/logo/dhaka_metro_rail_logos_white_rs.png'
 import { UserContext } from '../../AuthProvider/UserProvider';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -52,17 +53,17 @@ const Navigationbar = () => {
 
 
     return (
-        <nav className='shadow-lg mb-10 bg-[#ee0000]'>
+        <nav className='shadow-lg mb-10 bg-[#ee0000] px-4 md:px-0'>
             <div className='container mx-auto flex items-center justify-between'>
                 <a href='/'>
                     <div className='flex items-center gap-2 py-2'>
                         <figure className='h-16'>
                             <img className='h-full w-auto object-contain' src={logo} alt="" />
                         </figure>
-                        <h1 className='text-xl font-extrabold text-white'>Dhaka Metro <br /> Railway</h1>
+                        <h1 className='text-xl font-extrabold text-white'>Dhaka <br />Metro Rail</h1>
                     </div>
                 </a>
-                <div className='h-full'>
+                <div className=''>
                     <div onClick={() => setOpen(!open)} className="md:hidden cursor-pointer">
                         <span>
                             {
@@ -71,7 +72,7 @@ const Navigationbar = () => {
                             }
                         </span>
                     </div>
-                    <ul className={`text-base font-bold text-white md:pb-0 pb-4 h-full w-full pl-8 md:pl-0 md:flex justify-center lg:gap-8 items-center absolute md:static duration-500 shadow-lg md:shadow-none
+                    <ul className={`text-base font-bold text-white bg-[#e00] md:pb-0 pb-4 h-full w-full pl-8 md:pl-0 md:flex justify-center lg:gap-8 items-center absolute md:static duration-500 shadow-lg md:shadow-none
                         ${open ? 'top-20 right-0' : '-top-60 right-0'}`
                     }>
                         {
