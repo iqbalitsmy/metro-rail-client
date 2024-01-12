@@ -1,67 +1,21 @@
-import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import InstructionsSection from '../InstructionsSection/InstructionsSection';
+import SearchTrain from '../SearchTrain/SearchTrain';
+import { useState } from 'react';
 
 
 const TrainInformation = () => {
-    const [open, setOpen] = useState(false);
-    // const [trainInfo, setTrainInfo] = useState([]);
+    const [searchTrain, setSearchTrain] = useState([]);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         // Make a GET request with cookies using fetch
-    //         try {
-    //             const res = await fetch('trainInfo.json')
-    //             const json = await res.json();
-    //             setTrainInfo(json);
-    //         } catch (error) {
-    //             console.log("Error :", error)
-    //         }
-    //     }
-    //     fetchData()
-    // }, [])
-    // console.log(trainInfo)
+    const handleSearchData = (trainInfo) => {
+        setSearchTrain(trainInfo);
+    }
 
     return (
-        <div className=''>
+        <>
             <section className='container mx-auto flex flex-col md:flex-row justify-center gap-8 pb-16 mb-10'>
-                <aside className='w-full lg:w-1/4'>
-                    <div className='bg-[#f0f1fa] p-4 rounded-md'>
-                        <h3 className='text-lg font-medium mb-2'>Select Your Preferred Station</h3>
-                        <form className='relative'>
-                            <div className='flex flex-col bg-white p-2 rounded-md hover:bg-[#eee]'>
-                                <label
-                                    htmlFor="trainName"
-                                    className='text-[10px] text-[#b4b6cc] uppercase'
-                                >
-                                    Station Name
-                                </label>
-                                <input
-                                    className='hover:bg-[#eee]'
-                                    type="text"
-                                    name="trainName"
-                                    id="trainName"
-                                    value={"Agargaon Station 1 (1001)"}
-                                    placeholder='SELECT STATION'
-                                    onSelect={() => setOpen(true)}
-                                    onBlur={() => setOpen(false)}
-                                    style={{ outline: "none" }}
-                                />
-                            </div>
-                            <div className={`${open ? 'block' : "hidden"} absolute bg-white shadow-md p-2 h-52 overflow-y-scroll`}>
-                                <ul className=''>
-                                    <li className='hover:bg-gray-200 p-1 rounded-md transition-colors'>Agargaon Station 1 (1001)</li>
-                                    <li className='hover:bg-gray-200 p-1 rounded-md transition-colors'>Agargaon Station 2 (1002)</li>
-                                    <li className='hover:bg-gray-200 p-1 rounded-md transition-colors'>Agargaon Station 3 (1003)</li>
-                                    <li className='hover:bg-gray-200 p-1 rounded-md transition-colors'>Agargaon Station 4 (1004)</li>
-                                </ul>
-                            </div>
-                            <input className='w-full bg-[#d00] hover:bg-[#e00] py-1 mt-2 font-medium text-lg uppercase rounded-md text-white cursor-pointer' type='submit' value={"search"} />
-                        </form>
-                    </div>
-
-                </aside>
+                <SearchTrain onUpdateData={handleSearchData}></SearchTrain>
                 <aside className='bg-white shadow-lg rounded-md pb-12 pt-5 w-full lg:w-3/5'>
                     <div className='hidden'>
                         <figure className='flex flex-col justify-center items-center'>
@@ -230,7 +184,7 @@ const TrainInformation = () => {
                 </aside>
             </section>
             <InstructionsSection></InstructionsSection>
-        </div>
+        </>
 
     );
 };

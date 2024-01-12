@@ -1,5 +1,3 @@
-import React, { useContext } from 'react';
-import { UserContext } from '../../AuthProvider/UserProvider';
 
 
 const NavLink = ({ route }) => {
