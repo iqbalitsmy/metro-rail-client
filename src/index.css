@@ -5,3 +5,10 @@
 * {
     font-family: 'Roboto', sans-serif;
 }
+
+:root {
+    --primary: #ff0000;
+    --secondary: #FFF2F2;
+}
+
+/* style={{ backgroundColor: "var(--primary)"}} */

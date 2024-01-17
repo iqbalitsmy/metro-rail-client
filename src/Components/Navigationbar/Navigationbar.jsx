@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import NavLink from '../NavLink/NavLink';
 import logo from '../../assets/logo/images.png'
-// import logo from '../../assets/logo/dhaka_metro_rail_logos_white_rs.png'
 import { UserContext } from '../../AuthProvider/UserProvider';
 import axios from 'axios';
 import Cookies from 'js-cookie';
