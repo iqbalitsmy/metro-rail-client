@@ -1,13 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleArrowRight } from '@fortawesome/free-solid-svg-icons'
 import React from 'react';
+import instructionImg from '../../assets/instructionImg.png'
 
 const InstructionsSection = () => {
     return (
         <section className='container mx-auto mb-20'>
             <div className='flex flex-col md:flex-row justify-center lg:mx-10 md:mx-4 gap-10'>
                 <figure className='mx-auto md:w-9/12'>
-                    <img className='md:h-4/5 w-full object-center' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/instruction-secion-image.png" alt="" />
+                    <img className='md:h-4/5 w-full object-center' src={instructionImg} alt="" />
                 </figure>
                 <div className='w-full'>
                     <h3 className='text-center md:text-left text-2xl font-bold tracking-wide mb-6'>Instructions to Purchase Tickets</h3>

@@ -1,4 +1,10 @@
 import React from 'react';
+import bkash  from '../../assets/home/bkash.png'
+import masterCard  from '../../assets/home/master-card.png'
+import nagad  from '../../assets/home/nagad.png'
+import nexusDebit  from '../../assets/home/nexus-debit.svg'
+import upay  from '../../assets/home/upay.svg'
+import visa  from '../../assets/home/visa.png'
 
 const PaymentMethod = () => {
     return (
@@ -6,25 +12,25 @@ const PaymentMethod = () => {
             <hr className='border-t border-gray-400' />
             <div className='my-10 flex justify-center gap-5'>
                 <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/bkash-77x32.png" alt="" />
+                    <img className='h-full w-auto object-contain' src={bkash} alt="" />
                 </figure>
                 <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/nagad-32.png" alt="" />
+                    <img className='h-full w-auto object-contain' src={nagad} alt="" />
+                </figure>
+                {/* <figure className='h-9'>
+                    <img className='h-full w-auto object-contain' src={} alt="" />
+                </figure> */}
+                <figure className='h-9'>
+                    <img className='h-full w-auto object-contain' src={upay} alt="" />
                 </figure>
                 <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/rocket.svg" alt="" />
+                    <img className='h-full w-auto object-contain' src={masterCard} alt="" />
                 </figure>
                 <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/upay.svg" alt="" />
+                    <img className='h-full w-auto object-contain' src={visa} alt="" />
                 </figure>
                 <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/master-card.png" alt="" />
-                </figure>
-                <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/visa.png" alt="" />
-                </figure>
-                <figure className='h-9'>
-                    <img className='h-full w-auto object-contain' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/nexus-debit.svg" alt="" />
+                    <img className='h-full w-auto object-contain' src={nexusDebit} alt="" />
                 </figure>
             </div>
             <hr className='border-t border-gray-500' />

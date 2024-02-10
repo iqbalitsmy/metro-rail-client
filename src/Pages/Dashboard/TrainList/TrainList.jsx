@@ -1,14 +1,13 @@
-import React from 'react';
-import { Avatar, Box, Button, Checkbox, Fab, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
+import React, { Fragment, useEffect, useState } from 'react';
+import { Box, Button, Checkbox, CircularProgress, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { users } from '../../../utils/fakeUser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarsStaggered, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
-
-const rows = [...users];
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -25,11 +24,6 @@ function getComparator(order, orderBy) {
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
@@ -47,19 +41,13 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: true,
-        label: 'Name',
+        label: 'Station Name',
     },
     {
-        id: 'role',
+        id: 'time',
         numeric: false,
         disablePadding: false,
-        label: 'Role',
-    },
-    {
-        id: 'verified',
-        numeric: false,
-        disablePadding: false,
-        label: 'Verified',
+        label: 'Time',
     },
     {
         id: 'status',
@@ -194,16 +182,35 @@ EnhancedTableToolbar.propTypes = {
 
 const TrainList = () => {
 
-
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('status');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
+    const [trains, setTrains] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Edit and delete option
     const [open, setOpen] = React.useState(null);
+
+    // Train List data
+    useEffect(() => {
+        const fetchData = async () => {
+            // Make a GET request with cookies using fetch
+            try {
+                const response = await axios.get('http://localhost:3001/api/v1/stations', { withCredentials: true });
+                // console.log(response.data);
+                setTrains(response.data);
+                setIsLoading(false);
+            } catch (error) {
+                // setError(error.message || 'An error occurred');
+                console.log("Error :", error)
+            }
+        }
+        fetchData()
+    }, [])
+    const rows = [...trains];
 
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
@@ -221,7 +228,7 @@ const TrainList = () => {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = rows.map((n) => n._id);
             setSelected(newSelected);
             return;
         }
@@ -276,10 +283,10 @@ const TrainList = () => {
     return (
         <section className='mt-10'>
             <div className='flex justify-between mb-4'>
-                <h2 className='text-2xl font-bold'>Users</h2>
+                <h2 className='text-2xl font-bold'>Train List</h2>
                 <Button variant="contained" className='' sx={{ fontSize: "18px", bgcolor: '#000' }}>
                     <FontAwesomeIcon className='mr-2' icon={faPlus} />
-                    New Tickets
+                    New Station
                 </Button>
             </div>
 
@@ -287,104 +294,105 @@ const TrainList = () => {
                 <Paper sx={{ width: '100%', mb: 2 }}>
                     <EnhancedTableToolbar numSelected={selected.length} />
                     <TableContainer>
-                        <Table
-                            // sx={{ minWidth: 750 }}
-                            aria-labelledby="tableTitle"
-                            size={dense ? 'small' : 'medium'}
-                        >
-                            <EnhancedTableHead
-                                numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
-                                onSelectAllClick={handleSelectAllClick}
-                                onRequestSort={handleRequestSort}
-                                rowCount={rows.length}
-                            />
-                            <TableBody>
-                                {visibleRows.map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+                        {
+                            isLoading ? <Box sx={{ display: 'flex' }}>
+                                <CircularProgress />
+                            </Box> :
+                                <Table
+                                    // sx={{ minWidth: 750 }}
+                                    aria-labelledby="tableTitle"
+                                    size={dense ? 'small' : 'medium'}
+                                >
+                                    <EnhancedTableHead
+                                        numSelected={selected.length}
+                                        order={order}
+                                        orderBy={orderBy}
+                                        onSelectAllClick={handleSelectAllClick}
+                                        onRequestSort={handleRequestSort}
+                                        rowCount={rows.length}
+                                    />
+                                    <TableBody>
+                                        {visibleRows.map((row, index) => {
+                                            const isItemSelected = isSelected(row.id);
+                                            const labelId = `enhanced-table-checkbox-${index}`;
 
-                                    return (
-                                        <>
-                                            <TableRow
-                                                hover
-                                                role="checkbox"
-                                                // aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.id}
-                                            // selected={isItemSelected}
-                                            // sx={{ cursor: 'pointer' }}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        onClick={(event) => handleClick(event, row.id)}
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        aria-checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                {/* name column avatar and name */}
-                                                <TableCell component="th" scope="row"
-                                                    id={labelId} padding="none">
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={row.name} src={row.photoURL} />
-                                                        <Typography variant="subtitle2" noWrap>
+                                            return (
+                                                <Fragment key={`row-${row.name}`}>
+                                                    <TableRow
+                                                        hover
+                                                        role="checkbox"
+                                                        // aria-checked={isItemSelected}
+                                                        tabIndex={-1}
+                                                        key={row.id}
+                                                    // selected={isItemSelected}
+                                                    // sx={{ cursor: 'pointer' }}
+                                                    >
+                                                        <TableCell padding="checkbox">
+                                                            <Checkbox
+                                                                onClick={(event) => handleClick(event, row.id)}
+                                                                color="primary"
+                                                                checked={isItemSelected}
+                                                                aria-checked={isItemSelected}
+                                                                inputProps={{
+                                                                    'aria-labelledby': labelId,
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        {/* name column avatar and name */}
+                                                        <TableCell component="th" scope="row"
+                                                            id={labelId} padding="none">
                                                             {row.name}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                {/* <TableCell align="right">{row.role}</TableCell> */}
-                                                <TableCell>{row.role}</TableCell>
-                                                <TableCell>{row.verified}</TableCell>
-                                                <TableCell>{row.status}</TableCell>
+                                                        </TableCell>
+                                                        {/* <TableCell align="right">{row.role}</TableCell> */}
+                                                        <TableCell>08:00 AM to 08:00 PM</TableCell>
+                                                        <TableCell>{row.status}</TableCell>
 
-                                                {/* Edit and delete options */}
-                                                <TableCell align="right">
-                                                    <IconButton onClick={handleOpenMenu}>
-                                                        ...
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                            <Popover
-                                                open={!!open}
-                                                anchorEl={open}
-                                                onClose={handleCloseMenu}
-                                                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                                                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                                PaperProps={{
-                                                    sx: { width: 140, boxShadow: '0 2px 10px rgba(5, 5, 5, 0.1)' },
+                                                        {/* Edit and delete options */}
+                                                        <TableCell align="right">
+                                                            <IconButton onClick={handleOpenMenu}>
+                                                                ...
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    <Popover
+                                                        open={!!open}
+                                                        anchorEl={open}
+                                                        onClose={handleCloseMenu}
+                                                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                        PaperProps={{
+                                                            sx: { width: 140, boxShadow: '0 2px 10px rgba(5, 5, 5, 0.1)' },
+                                                        }}
+                                                    >
+                                                        <MenuItem onClick={handleCloseMenu}>
+                                                            <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
+                                                            Edit
+                                                        </MenuItem>
+
+                                                        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
+                                                            <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
+                                                            Delete
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
+                                                            Deactivate
+                                                        </MenuItem>
+                                                    </Popover>
+                                                </Fragment>
+                                            );
+                                        })}
+                                        {emptyRows > 0 && (
+                                            <TableRow
+                                                style={{
+                                                    height: (dense ? 33 : 53) * emptyRows,
                                                 }}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>
-                                                    {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
-                                                    <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
-                                                    Edit
-                                                </MenuItem>
+                                                <TableCell colSpan={6} />
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                        }
 
-                                                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
-                                                    {/* <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} /> */}
-                                                    <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
-                                                    Delete
-                                                </MenuItem>
-                                            </Popover>
-                                        </>
-                                    );
-                                })}
-                                {emptyRows > 0 && (
-                                    <TableRow
-                                        style={{
-                                            height: (dense ? 33 : 53) * emptyRows,
-                                        }}
-                                    >
-                                        <TableCell colSpan={6} />
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
                     </TableContainer>
                     <TablePagination
                         rowsPerPageOptions={[15, 20, 25, 30]}

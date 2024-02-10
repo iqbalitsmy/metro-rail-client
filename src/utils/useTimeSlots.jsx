@@ -17,7 +17,7 @@ const useTimeSlots = (startTime, endTime) => {
             slots.push(formattedTime);
 
             // Increment the time by 15 minutes
-            currentMinute += 15;
+            currentMinute += 10;
 
             // If the minute exceeds 59, reset it to 0 and increment the hour
             if (currentMinute === 60) {

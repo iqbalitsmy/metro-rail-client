@@ -1,32 +1,66 @@
-import { faChartSimple, faTrainSubway, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faChartSimple, faCircleStop, faTicket, faTrainSubway, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink, Outlet } from 'react-router-dom';
 import logo from '../../assets/logo/images.png'
+import { UserContext } from '../../AuthProvider/UserProvider';
+import { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import { Badge } from '@mui/material';
 
 const navList = [
     {
         name: "Dashboard",
         icon: faChartSimple,
-        to: ""
+        to: "dashboard"
     },
     {
         name: "User",
         icon: faUsers,
-        to: "user",
+        to: "users",
+    },
+    // {
+    //     name: "Train List",
+    //     icon: faTrainSubway,
+    //     to: "train-list"
+    // },
+    {
+        name: "Station List",
+        icon: faCircleStop,
+        to: "station-list"
     },
     {
-        name: "Train List",
-        icon: faTrainSubway,
-        to: "train-list"
+        name: "Tickets List",
+        icon: faTicket,
+        to: "tickets"
     },
     {
-        name: "Add Train",
-        icon: faTrainSubway,
-        to: "add-train"
+        name: "Refund Request",
+        icon: faTicket,
+        to: "refund-tickets"
     },
 ]
 
 const Dashboard = () => {
+    const { user } = useContext(UserContext);
+    const { numberOfRefund, setNumberOfRefund } = useState(0);
+
+    // Station List data
+    useEffect(() => {
+        const fetchData = async () => {
+            // Make a GET request with cookies using fetch
+            try {
+                const response = await axios.get('http://localhost:3001/api/v1//numof-cancel-tickets', { withCredentials: true });
+                console.log(response.data);
+                setNumberOfRefund(response.data);
+            } catch (error) {
+                // setError(error.message || 'An error occurred');
+                console.log("Error :", error)
+            }
+        }
+        fetchData()
+    }, [setNumberOfRefund])
+
+    console.log(numberOfRefund);
 
     return (
         <>
@@ -37,9 +71,9 @@ const Dashboard = () => {
                     </figure>
                     <div className='p-4 flex gap-3 items-center bg-[#edeff1] rounded-md'>
                         <figure className='h-12 w-12'>
-                            <img className='object-contain rounded-full' src="https://cdn-icons-png.flaticon.com/512/3641/3641963.png" alt="Avatar" />
+                            <img className='object-contain rounded-full' src={user.image} alt="Avatar" />
                         </figure>
-                        <h3 className='text-base font-medium'>Jaydon Frankie</h3>
+                        <h3 className='text-base font-medium'>{user.name}</h3>
                     </div>
                     <div className='space-y-1'>
                         {
@@ -50,6 +84,12 @@ const Dashboard = () => {
                             >
                                 <FontAwesomeIcon className='text-xl' icon={item?.icon} />
                                 <p className='text-lg'>{item?.name}</p>
+                                {
+                                    item.to === "refund-tickets" ? (<Badge color="secondary" badgeContent={numberOfRefund}>
+                                        <FontAwesomeIcon icon={faBell} />
+                                    </Badge>) : ""
+                                }
+
                             </NavLink>))
                         }
                     </div>

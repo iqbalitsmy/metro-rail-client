@@ -1,11 +1,14 @@
-import React from 'react';
+import search from '../../assets/home/bookingSteps/search.svg'
+import select from '../../assets/home/bookingSteps/select.svg'
+import pay from '../../assets/home/bookingSteps/pay.svg'
+
 
 const BookingSteps = () => {
     return (
         <section className='mb-16 container mx-auto flex flex-col md:flex-row justify-around items-center gap-8'>
             <div>
                 <figure className='h-48'>
-                    <img className='h-full w-auto' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/search.svg" alt="" />
+                    <img className='h-full w-auto' src={search} alt="" />
                 </figure>
                 <div>
                     <h2 className='text-3xl font-bold mb-4'>Search</h2>
@@ -14,7 +17,7 @@ const BookingSteps = () => {
             </div>
             <div>
                 <figure className='h-48'>
-                    <img className='h-full w-auto' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/select.svg" alt="" />
+                    <img className='h-full w-auto' src={select} alt="" />
                 </figure>
                 <div>
                     <h2 className='text-3xl font-bold mb-4'>Select</h2>
@@ -23,7 +26,7 @@ const BookingSteps = () => {
             </div>
             <div>
                 <figure className='h-48'>
-                    <img className='h-full w-auto' src="https://d19qjkjk65tfln.cloudfront.net/v2/assets/img/home/pay.svg" alt="" />
+                    <img className='h-full w-auto' src={pay} alt="" />
                 </figure>
                 <div>
                     <h2 className='text-3xl font-bold mb-4'>Pay</h2>

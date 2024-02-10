@@ -1,14 +1,14 @@
-import { Avatar, Box, Button, Checkbox, Fab, FormLabel, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Avatar, Box, Button, Checkbox, CircularProgress, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { users } from '../../../utils/fakeUser';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarsStaggered, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-
-const rows = [...users];
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -26,10 +26,6 @@ function getComparator(order, orderBy) {
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
@@ -193,23 +189,151 @@ EnhancedTableToolbar.propTypes = {
 
 const Users = () => {
 
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('status');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(15);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('status');
+    const [selected, setSelected] = useState([]);
+    const [page, setPage] = useState(0);
+    const [dense, setDense] = useState(false);
+    const [rowsPerPage, setRowsPerPage] = useState(15);
+    const [anchorEl, setAnchorEl] = useState(Array(users.length).fill(null));
+
 
     // Edit and delete option
-    const [open, setOpen] = React.useState(null);
+    const [open, setOpen] = useState(null);
 
-    const handleOpenMenu = (event) => {
-        setOpen(event.currentTarget);
+    // Station List data
+    useEffect(() => {
+        const fetchData = async () => {
+            // Make a GET request with cookies using fetch
+            try {
+                const response = await axios.get('http://localhost:3001/api/v1/users', { withCredentials: true });
+                // console.log(response.data);
+                setUsers(response.data);
+                setLoading(false);
+            } catch (error) {
+                // setError(error.message || 'An error occurred');
+                console.log("Error :", error)
+                setLoading(false);
+            }
+        }
+        fetchData()
+    }, [])
+
+    const rows = [...users];
+
+    // console.log(rows)
+
+    const handleOpenMenu = (event, index) => {
+        const newAnchorEl = [...anchorEl];
+        newAnchorEl[index] = event.currentTarget;
+        setAnchorEl(newAnchorEl);
     };
 
-    const handleCloseMenu = () => {
-        setOpen(null);
+    const handleCloseMenu = (index) => {
+        const newAnchorEl = [...anchorEl];
+        newAnchorEl[index] = null;
+        setAnchorEl(newAnchorEl);
     };
+
+    // Handle delete user
+    const handleDelete = async (event, id) => {
+        // setOpen(null);
+        console.log(id)
+        try {
+            const response = await fetch(`http://localhost:3001/api/v1/deleteUser/${id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header
+                },
+
+            });
+            const responseData = await response.json();
+            if (response.ok) {
+                console.log(responseData);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "User delete successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.location.reload(true)
+            } else {
+                console.error("Failed to delete user:", responseData.error);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Failed to delete user",
+                    text: "Pleas try again",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Something is wrong",
+                text: "Pleas try again",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    const handleBanned = async (event, id) => {
+        // setOpen(null);
+        console.log(id)
+        console.log(event)
+        console.log(event.target.innerText)
+        try {
+            const response = await fetch(`http://localhost:3001/api/v1/update/${id}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header
+                },
+                body: JSON.stringify({status: event.target.innerText}),
+            });
+            const responseData = await response.json();
+            if (response.ok) {
+                console.log(responseData.user);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "User update successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.location.reload(true);
+            } else {
+                console.error("Failed to create user:", responseData.error);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Something is wrong",
+                    text: "Pleas try again",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Something is wrong",
+                text: "Pleas try again",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            // console.log('Form data submitted:', formData);
+        }
+    }
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -219,7 +343,7 @@ const Users = () => {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = rows.map((n) => n._id);
             setSelected(newSelected);
             return;
         }
@@ -267,15 +391,33 @@ const Users = () => {
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage],
+        [order, orderBy, page, rowsPerPage, rows],
     );
+
+    // console.log(visibleRows)
+
+    // // Calculate empty rows using Math.ceil
+    // const emptyRows = Math.max(0, Math.ceil((1 + page) * rowsPerPage - users.length));
+
+    // const visibleRows = stableSort(users, getComparator(order, orderBy)).slice(
+    //     page * rowsPerPage,
+    //     page * rowsPerPage + rowsPerPage,
+    // );
+    if (loading) {
+        return <Box sx={{ display: 'flex' }}>
+            <CircularProgress />
+        </Box>; // Display a loading indicator
+    }
+
     return (
         <section className='mt-10'>
             <div className='flex justify-between mb-4'>
                 <h2 className='text-2xl font-bold'>Users</h2>
                 <Button variant="contained" className='' sx={{ fontSize: "18px", bgcolor: '#000' }}>
-                    <FontAwesomeIcon className='mr-2' icon={faPlus} />
-                    New User
+                    <Link to={"add-user"}>
+                        <FontAwesomeIcon className='mr-2' icon={faPlus} />
+                        New User
+                    </Link>
                 </Button>
             </div>
 
@@ -298,60 +440,63 @@ const Users = () => {
                             />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
+                                    const isItemSelected = isSelected(row._id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
-                                        <>
-                                            <TableRow
-                                                hover
-                                                role="checkbox"
-                                                // aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.id}
-                                            // selected={isItemSelected}
-                                            // sx={{ cursor: 'pointer' }}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        onClick={(event) => handleClick(event, row.id)}
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        aria-checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                {/* name column avatar and name */}
-                                                <TableCell component="th" scope="row"
-                                                    id={labelId} padding="none">
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={row.name} src={row.photoURL} />
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            {row.name}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                {/* <TableCell align="right">{row.role}</TableCell> */}
-                                                <TableCell>{row.role}</TableCell>
-                                                <TableCell>{row.verified}</TableCell>
-                                                {/* <TableCell>{row.status}</TableCell> */}
-                                                <TableCell>
-                                                    <p className={`text-base inline-block p-1 rounded-lg ${row.status == 'Banned' ? 'text-red-900 bg-red-200' : 'text-green-900 bg-green-200'}`}>{row.status}</p>
-                                                </TableCell>
-
-                                                {/* Edit and delete options */}
-                                                <TableCell align="right">
-                                                    <IconButton onClick={handleOpenMenu}>
-                                                        ...
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
+                                        <TableRow
+                                            hover
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row._id}
+                                            selected={isItemSelected}
+                                            onClick={() => console.log(row._id)}
+                                        >
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    onClick={(event) => handleClick(event, row._id)}
+                                                    color="primary"
+                                                    checked={isItemSelected}
+                                                    aria-checked={isItemSelected}
+                                                    inputProps={{
+                                                        'aria-labelledby': labelId,
+                                                    }}
+                                                />
+                                            </TableCell>
+                                            {/* name column avatar and name */}
+                                            <TableCell component="th" scope="row"
+                                                id={labelId} padding="none">
+                                                <Stack direction="row" alignItems="center" spacing={2}>
+                                                    <Avatar alt={row.name} src={row.photoURL} />
+                                                    <Typography
+                                                        variant="subtitle2"
+                                                        noWrap
+                                                        sx={{ fontWeight: 'bold', fontSize: '18px' }}
+                                                    >
+                                                        {row.name}
+                                                    </Typography>
+                                                </Stack>
+                                            </TableCell>
+                                            {/* <TableCell align="right">{row.role}</TableCell> */}
+                                            <TableCell sx={{ fontSize: '18px' }}>{row.role}</TableCell>
+                                            <TableCell sx={{ fontSize: '18px' }}>{row.email}</TableCell>
+                                            <TableCell sx={{ fontSize: '18px' }}>
+                                                <p className={`text-base inline-block p-1 rounded-lg ${row.status == 'banned' ? 'text-red-900 bg-red-200' : 'text-green-900 bg-green-200'}`}>{row.status}</p>
+                                            </TableCell>
+                                            {/* Edit and delete options */}
+                                            <TableCell align="right" sx={{ fontSize: '18px' }}>
+                                                <IconButton onClick={(event) => handleOpenMenu(event, index)}>
+                                                    ...
+                                                </IconButton>
+                                            </TableCell>
                                             <Popover
-                                                open={!!open}
-                                                anchorEl={open}
-                                                onClose={handleCloseMenu}
+                                                // open={!!open}
+                                                // anchorEl={open}
+                                                // onClose={handleCloseMenu}
+                                                open={!!anchorEl[index]}
+                                                anchorEl={anchorEl[index]}
+                                                onClose={() => handleCloseMenu(index)}
                                                 anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                 PaperProps={{
@@ -360,17 +505,22 @@ const Users = () => {
                                             >
                                                 <MenuItem onClick={handleCloseMenu}>
                                                     {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
-                                                    <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
-                                                    Edit
+                                                    <Link to={`${row._id}`}>
+                                                        <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
+                                                        Edit
+                                                    </Link>
                                                 </MenuItem>
-
-                                                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
-                                                    {/* <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} /> */}
+                                                <MenuItem onClick={(event) => handleDelete(event, row._id)} sx={{ color: 'error.main', }}>
                                                     <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
                                                     Delete
                                                 </MenuItem>
+                                                <MenuItem onClick={(event) => handleBanned(event, row._id)} sx={{ color: `${row.status === "banned" ? "error.main" : ""}`, }}>
+                                                    {
+                                                        row.status === "banned" ? "active" : "banned"
+                                                    }
+                                                </MenuItem>
                                             </Popover>
-                                        </>
+                                        </TableRow>
                                     );
                                 })}
                                 {emptyRows > 0 && (

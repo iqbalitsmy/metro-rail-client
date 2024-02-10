@@ -1,16 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import NavLink from '../NavLink/NavLink';
 import logo from '../../assets/logo/images.png'
 import { UserContext } from '../../AuthProvider/UserProvider';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import avatar from '../../assets/profile.avif'
+import { Menu, MenuItem } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 
 const Navigationbar = () => {
-    const [open, setOpen] = useState(false);
-    const [imgClick, setimgClick] = useState(false);
-    const userInfo = useContext(UserContext);
-    console.log(userInfo);
+    const [drawerOpen, setOpen] = useState(false);
+    const { user } = useContext(UserContext);
+    // console.log(user)
+
+    // Menu mui
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
     const routes = [
         {
             id: 1,
@@ -36,15 +51,16 @@ const Navigationbar = () => {
             id: 5,
             name: "Contact Us",
             path: "/contact-us"
-        }
+        },
     ];
 
     const handleLogOut = (async () => {
         // Make a GET request with cookies using fetch
         try {
-            const res = await axios.get('http://localhost:3000/api/v1/logout')
+            const res = await axios.get('http://localhost:3001/api/v1/logout', { withCredentials: true })
             console.log(res)
             Cookies.remove("token");
+            window.location.reload();
         } catch (error) {
             console.log("Error :", error)
         }
@@ -63,25 +79,20 @@ const Navigationbar = () => {
                     </div>
                 </a>
                 <div className=''>
-                    <div onClick={() => setOpen(!open)} className="md:hidden cursor-pointer">
+                    <div onClick={() => setOpen(!drawerOpen)} className="md:hidden cursor-pointer">
                         <span>
                             {
-                                open === true ? <XMarkIcon className='h-6 w-6'></XMarkIcon>
+                                drawerOpen === true ? <XMarkIcon className='h-6 w-6'></XMarkIcon>
                                     : <Bars3Icon className='h-6 w-6'></Bars3Icon>
                             }
                         </span>
                     </div>
                     <ul className={`text-base font-bold text-white bg-[#e00] md:pb-0 pb-4 h-full w-full pl-8 md:pl-0 md:flex justify-center lg:gap-8 items-center absolute md:static duration-500 shadow-lg md:shadow-none
-                        ${open ? 'top-20 right-0' : '-top-60 right-0'}`
+                        ${drawerOpen ? 'top-20 right-0' : '-top-60 right-0'}`
                     }>
                         {
                             routes.map(route => {
-                                // return (<NavLink
-                                //     key={route.id}
-                                //     route={route}
-                                // >
-                                // </NavLink>)
-                                if ((Object.keys(userInfo).length !== 0) && (route.name === 'Login' || route.name === 'Register')) {
+                                if ((Object.keys(user).length !== 0) && (route.name === 'Login' || route.name === 'Register')) {
                                     return
                                 } else {
                                     return (<NavLink
@@ -94,10 +105,51 @@ const Navigationbar = () => {
                             )
                         }
                         {
-                            (Object.keys(userInfo).length !== 0) &&
+                            (Object.keys(user).length !== 0) &&
+                            (<li className='rounded-full bg-slate-100 shadow-lg relative'>
+                                <figure
+                                    className='h-10 w-10'
+                                    aria-controls={drawerOpen ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={drawerOpen ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    <img className='object-contain rounded-full' src={user.image} alt="Avatar" />
+                                </figure>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={handleClose}>{user.name}</MenuItem>
+                                    <MenuItem onClick={handleClose}>{user.email}</MenuItem>
+                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                    <Link to={'/profile/tickets'}>
+                                        <MenuItem onClick={handleClose}>My Tickets</MenuItem>
+                                    </Link>
+                                    {
+                                        user.role === "admin" &&
+                                        (<MenuItem onClick={handleClose}>
+                                            <Link
+                                                to={'/admin/dashboard'}
+                                            >
+                                                Dashboard
+                                            </Link>
+                                        </MenuItem>)
+                                    }
+                                    <MenuItem onClick={() => handleLogOut()}>Logout</MenuItem>
+                                </Menu>
+                            </li>)
+                        }
+                        {/* {
+                            (Object.keys(user).length !== 0) &&
                             (<li className='rounded-full bg-slate-100 shadow-lg relative' onClick={() => setimgClick(true)} onMouseLeave={() => setimgClick(false)}>
                                 <figure className='h-10 w-10'>
-                                    <img className='object-contain' src="https://cdn-icons-png.flaticon.com/512/3641/3641963.png" alt="Avatar" />
+                                    <img className='object-contain rounded-full' src={avatar} alt="Avatar" />
                                 </figure>
                                 <button
                                     className={`bg-white text-black absolute mb-4 ${imgClick ? 'block' : 'hidden'}`}
@@ -106,7 +158,7 @@ const Navigationbar = () => {
                                     Logout
                                 </button>
                             </li>)
-                        }
+                        } */}
                     </ul>
                 </div>
             </div>
