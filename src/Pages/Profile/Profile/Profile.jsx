@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
-import profile from "../../../assets/profile.avif"
 import { UserContext } from '../../../AuthProvider/UserProvider';
 
 const Profile = () => {

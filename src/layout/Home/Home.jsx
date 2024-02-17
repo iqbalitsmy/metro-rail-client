@@ -6,18 +6,16 @@ import Accessibility from '../../Components/Accessibility/Accessibility';
 import HomeBanner from '../../Components/HomeBanner/HomeBanner';
 import { Autocomplete, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import generateSubarray from '../../utils/subArray';
 import calculateRealTimeUpdates from '../../utils/StationUpdate';
 import roundTimeToSlot from '../../utils/roundedTimeSlote';
-import { UserContext } from '../../AuthProvider/UserProvider';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-
-    const { user } = useContext(UserContext);
     const [station, setStation] = useState([]);
     const [fromSelectedValue, setFromSelectedValue] = useState(null);
     const [toSelectedValue, setToSelectedValue] = useState(null);
@@ -27,12 +25,10 @@ const Home = () => {
     const [selectedTime, setSelectedTime] = useState(dayjs());
     const [selectedStations, setSelectedStations] = useState(null);
     const [selectedStationData, setSelectedStationData] = useState(null)
-    const [ticketUnitPrice, setTicketUnitPrice] = useState(10)
-    const [ticketPrice, setTicketPrice] = useState(0);
-    const [navigateToHome, setNavigateToHome] = useState(false);
     const [formData, setFormData] = useState({})
 
     const today = dayjs();
+    const ticketUnitPrice = 10;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,6 +69,7 @@ const Home = () => {
     };
 
     const handleDateChange = (date) => {
+        console.log(date)
         setSelectedDate(date);
         // console.log(selectedDate.format('dddd'));
     };
@@ -84,33 +81,37 @@ const Home = () => {
 
     // Send station request
     const handleSearchTrain = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
 
         // Collect the form data
         const newFromData = {
             from: fromSelectedValue,
             to: toSelectedValue,
-            purchaseDate: selectedDate.format('YYYY-MM-DD'),
-            time: selectedTime.format('YYYY-MM-DDTHH:mm:ss'),
+            purchaseDate: selectedDate,
+            time: selectedTime,
+            // purchaseDate: selectedDate.format('YYYY-MM-DD'),
+            // time: selectedTime.format('YYYY-MM-DDTHH:mm:ss'),
         };
+
         // Sub array of station
-        const stationToFrom = generateSubarray(newFromData.from, newFromData.to, station)
+        const stationToFrom = generateSubarray(newFromData.from, newFromData.to, station);
         setSelectedStations(stationToFrom);
 
 
         // for halt and deprture calculation
         const stationNameToCalculate = [...stationToFrom.map(s => s.name)];
-        const data = calculateRealTimeUpdates(stationNameToCalculate, 3, 7, new Date(roundTimeToSlot(newFromData.time)))
-        setTicketPrice(ticketUnitPrice * data.length);
-        setTicketUnitPrice(ticketUnitPrice * data.length);
+        const data = calculateRealTimeUpdates(stationNameToCalculate, 3, 7, new Date(roundTimeToSlot(selectedTime.format('YYYY-MM-DDTHH:mm:ss'))))
+        const price = ticketUnitPrice * data.length
+        // console.log(price)
+
 
         setSelectedStationData(data)
 
         setFormData(newFromData)
-        console.log(formData)
 
         // Storing data
-        localStorage.setItem('myData', JSON.stringify(newFromData));
+        localStorage.setItem('searchTrain', JSON.stringify({ data, ticketPrice: price, trainData: newFromData }));
+        console.log(localStorage.getItem('searchTrain'))
     };
 
 
@@ -118,7 +119,7 @@ const Home = () => {
         <>
             <section className='container mx-auto mb-16 md:flex justify-center items-center gap-4 px-4 md:px-0'>
                 <aside className=''>
-                    <form className='flex flex-col gap-4' onSubmit={handleSearchTrain}>
+                    <form className='flex flex-col gap-4'>
                         <div className='flex flex-row gap-4'>
                             <div className='flex flex-col w-full'>
                                 <label className='font-medium mb-2' htmlFor="from">From</label>
@@ -169,9 +170,14 @@ const Home = () => {
                             </div>
                         </div>
                         <div className='text-center font-semibold text-white bg-[#ee0000] hover:bg-[#de0000] py-2 rounded'>
-                            {/* <Link to={"/train-information"}> */}
-                            <input className='uppercase tracking-wider cursor-pointer w-full' type="submit" name="" id="" value={"Search Trains"} />
-                            {/* </Link> */}
+                            <Link to={"/train-information"}>
+                                <button
+                                    className='uppercase tracking-wider cursor-pointer w-full'
+                                    onClick={handleSearchTrain}
+                                >
+                                    Search Trains
+                                </button>
+                            </Link>
                         </div>
                     </form>
                 </aside>

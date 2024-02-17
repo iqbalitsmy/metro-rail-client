@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarsStaggered, faCircleCheck, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 
@@ -218,10 +217,6 @@ const TicketRefund = () => {
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [anchorEl, setAnchorEl] = useState(Array(refundTickets.length).fill(null));
 
-
-    // Edit and delete option
-    const [open, setOpen] = useState(null);
-
     // Station List data
     useEffect(() => {
         const fetchData = async () => {
@@ -256,35 +251,36 @@ const TicketRefund = () => {
         setAnchorEl(newAnchorEl);
     };
 
-    // Handle delete user
-    const handleDelete = async (event, id) => {
-        // setOpen(null);
+    // Handle refund ticket
+    const handleRefund = async (event, id, msg) => {
         console.log(id)
         try {
-            const response = await fetch(`http://localhost:3001/api/v1/deleteUser/${id}`, {
-                method: 'DELETE',
+            const response = await fetch(`http://localhost:3001/api/v1/refund-request/${id}`, {
+                method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json', // Set the Content-Type header
                 },
+                body: JSON.stringify({ payment: msg }),
             });
             const responseData = await response.json();
+            console.log(responseData)
             if (response.ok) {
                 console.log(responseData);
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
-                    title: "User delete successfully",
+                    title: "Payment status update successfully",
                     showConfirmButton: false,
                     timer: 1500
                 });
                 window.location.reload(true)
             } else {
-                console.error("Failed to delete user:", responseData.error);
+                console.error("Failed to update payment status:", responseData.error);
                 Swal.fire({
                     position: "top-end",
                     icon: "error",
-                    title: "Failed to delete user",
+                    title: "Failed to update payment status",
                     text: "Pleas try again",
                     showConfirmButton: false,
                     timer: 1500
@@ -458,12 +454,12 @@ const TicketRefund = () => {
                                                     sx: { width: 180, boxShadow: '0 2px 10px rgba(5, 5, 5, 0.1)' },
                                                 }}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>
+                                                <MenuItem onClick={(event) => handleRefund(event, row._id, "accept refund")}>
                                                     {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
                                                     <FontAwesomeIcon className='mr-2' icon={faCircleCheck} />
                                                     Accept Refund
                                                 </MenuItem>
-                                                <MenuItem onClick={(event) => handleDelete(event, row._id)} sx={{ color: 'error.main', }}>
+                                                <MenuItem onClick={(event) => handleRefund(event, row._id, "reject refund")} sx={{ color: 'error.main', }}>
                                                     <FontAwesomeIcon className='mr-2' icon={faXmark} />
                                                     Reject Refund
                                                 </MenuItem>

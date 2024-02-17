@@ -4,7 +4,7 @@ import { alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBarsStaggered, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faBarsStaggered, faEnvelope, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -259,10 +259,69 @@ const TicketsList = () => {
     // Handle delete user
     const handleDelete = async (event, id) => {
         // setOpen(null);
+        // console.log(id)
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://localhost:3001/api/v1/delete-ticket/${id}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json', // Set the Content-Type header
+                        },
+                    });
+                    const responseData = await response.json();
+                    if (response.ok) {
+                        console.log(responseData);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "User delete successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        window.location.reload(true)
+                    } else {
+                        console.error("Failed to delete user:", responseData.error);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Failed to delete user",
+                            text: "Pleas try again",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "Something is wrong",
+                        text: "Pleas try again",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    }
+
+    const handleSendMail = async (event, id) => {
         console.log(id)
+
         try {
-            const response = await fetch(`http://localhost:3001/api/v1/deleteUser/${id}`, {
-                method: 'DELETE',
+            const response = await fetch(`http://localhost:3001/api/v1/ticket-mail/${id}`, {
+                method: 'GET',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json', // Set the Content-Type header
@@ -274,17 +333,16 @@ const TicketsList = () => {
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
-                    title: "User delete successfully",
+                    title: "Send mail successfully",
                     showConfirmButton: false,
                     timer: 1500
                 });
-                window.location.reload(true)
             } else {
-                console.error("Failed to delete user:", responseData.error);
+                console.error("Failed to send mail:", responseData.error);
                 Swal.fire({
                     position: "top-end",
                     icon: "error",
-                    title: "Failed to delete user",
+                    title: "Failed to send mail",
                     text: "Pleas try again",
                     showConfirmButton: false,
                     timer: 1500
@@ -465,13 +523,18 @@ const TicketsList = () => {
                                                 }}
                                             >
                                                 <MenuItem onClick={handleCloseMenu}>
-                                                    {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
-                                                    <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
-                                                    Edit
+                                                    <Link to={`${row._id}`}>
+                                                        <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
+                                                        Edit
+                                                    </Link>
                                                 </MenuItem>
                                                 <MenuItem onClick={(event) => handleDelete(event, row._id)} sx={{ color: 'error.main', }}>
                                                     <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
                                                     Delete
+                                                </MenuItem>
+                                                <MenuItem onClick={(event) => handleSendMail(event, row._id)}>
+                                                    <FontAwesomeIcon className='mr-2' icon={faEnvelope} />
+                                                    Send Tickets
                                                 </MenuItem>
                                             </Popover>
                                         </TableRow>

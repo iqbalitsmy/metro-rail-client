@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import './Register.css'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,10 +7,12 @@ import dayjs from 'dayjs';
 import registerImg from '../../assets/register/register.svg'
 import { Button } from '@mui/material';
 import axios from 'axios';
+import { UserContext } from '../../AuthProvider/UserProvider';
 
 const today = dayjs();
 
 const Register = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [url, setUrl] = useState("");
     const [formData, setFormData] = useState({
@@ -23,8 +25,15 @@ const Register = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [navigateToHome, setNavigateToHome] = useState(false);
+    const { user, isLoading } = useContext(UserContext);
 
+
+    useEffect(() => {
+        // if user already have than redirect
+        if (user.email && !isLoading) {
+            return navigate("/", { replace: true });
+        }
+    }, [user, isLoading]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,6 +50,7 @@ const Register = () => {
             dateOfBirth: jsDate,
         });
     };
+
     // Image Upload
     const convertBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -66,7 +76,6 @@ const Register = () => {
             .post("http://localhost:3001/api/v1/upload-image", { image: base64 })
             .then((res) => {
                 setUrl(res.data);
-                alert("Image uploaded Succesfully");
                 setFormData({
                     ...formData,
                     image: res.data,
@@ -125,12 +134,12 @@ const Register = () => {
                     },
                     body: JSON.stringify(formData),
                 });
-                if (response) {
+                if (response.ok) {
                     console.log(response);
-                    setNavigateToHome(true)
+                    window.location.reload();
                 }
-            } catch (error) {
-                console.error('Error:', error);
+            } catch (err) {
+                console.error('Error:', err);
             }
             console.log('Form data submitted:', formData);
         }
@@ -200,13 +209,15 @@ const Register = () => {
                             </div>
                             <div className='grid grid-cols-2 w-full gap-2'>
                                 <div className='flex flex-col w-full'>
+                                    <label htmlFor="timeInput" className="block text-base font-medium text-gray-700 mb-1">
+                                        Date of birth
+                                    </label>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DatePicker
                                             name="dateOfBirth" id="dateOfBirth"
                                             disableFuture
                                             inputFormat="MMM dd, yyyy"
                                             disableMaskedInput={true}
-                                            value={dayjs(formData.dob, 'DD/MM/YYYY')}
                                             onChange={handleDateChange}
                                             className='in-search-train rounded pl-3 py-1 w-full'
                                         />
@@ -216,10 +227,13 @@ const Register = () => {
                                     }
                                 </div>
                                 <div>
-                                    Upload Profile
+                                    <label htmlFor="timeInput" className="block text-base font-medium text-gray-700 mb-1">
+                                        Upload Profile Picture
+                                    </label>
                                     <input
                                         type="file"
                                         id='dropzone-file'
+                                        required
                                         onChange={uploadImage}
                                     />
                                 </div>
@@ -233,7 +247,6 @@ const Register = () => {
                             <Link to={'/login'}>Already Registered?</Link>
                         </div>
                     </form>
-                    {navigateToHome && <Navigate to="/" replace={true} />}
                 </div>
             </div>
         </section>

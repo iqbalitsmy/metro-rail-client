@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import logo from '../../../../assets/logo/images.png'
 import Swal from 'sweetalert2';
 
-const AddStation = () => {
+const UpdateStation = () => {
+    const { _id, name, location, status } = useLoaderData();
+    console.log(name, location, status)
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        name: '',
-        location: '',
-        status: "",
+        name: name,
+        location: location,
+        status: status,
     });
     const [errors, setErrors] = useState({});
 
@@ -43,8 +45,8 @@ const AddStation = () => {
             setErrors({});
             // Send the form data to the server or perform other actions
             try {
-                const response = await fetch('http://localhost:3001/api/v1/add-station', {
-                    method: 'POST',
+                const response = await fetch(`http://localhost:3001/api/v1/update-station/${_id}`, {
+                    method: 'PUT',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json', // Set the Content-Type header
@@ -56,7 +58,7 @@ const AddStation = () => {
                     Swal.fire({
                         position: "top-end",
                         icon: "success",
-                        title: "Station add successfully",
+                        title: "Station update successfully",
                         showConfirmButton: false,
                         timer: 1500
                     });
@@ -86,10 +88,12 @@ const AddStation = () => {
         console.log("Error", errors)
     }
 
+
+
     return (
         <main className='px-2 grid grid-cols-1 shadow-md'>
             <div className='mt-6'>
-                <h1 className='text-2xl font-medium mb-2'>Add Station</h1>
+                <h1 className='text-2xl font-medium mb-2'>Update Station Data</h1>
                 <hr className='border-t border-[#e00]' />
             </div>
             <div className='mx-auto w-full md:max-w-lg md:min-w-[25%] mb-28'>
@@ -106,7 +110,7 @@ const AddStation = () => {
                 </div>
                 <div className='bg-white rounded-lg w-full shadow-md'>
                     <div className='text-sm flex justify-between shadow-md px-4 py-5 w-full'>
-                        <p className='font-medium text-[#da924e]'>Add New Station</p>
+                        <p className='font-medium text-[#da924e]'>Update Station Data</p>
                     </div>
                     <form
                         onSubmit={handleStationDataSubmit}
@@ -120,6 +124,7 @@ const AddStation = () => {
                                 className='in-login rounded pl-3 py-2 mb-5 w-full bg-[#f5f8f9]'
                                 type="text"
                                 name="name" id="name"
+                                defaultValue={name}
                                 placeholder='Enter station name'
                                 onChange={handleChange}
                             />
@@ -134,6 +139,7 @@ const AddStation = () => {
                             <input
                                 className='in-login rounded pl-3 py-2 mb-5 w-full bg-[#f5f8f9]'
                                 type="text"
+                                defaultValue={location}
                                 name="location" id="location"
                                 placeholder='Enter station location'
                                 onChange={handleChange}
@@ -150,6 +156,7 @@ const AddStation = () => {
                                 className='in-login rounded pl-3 py-2 mb-5 w-full bg-[#f5f8f9]'
                                 type="text"
                                 name="status" id="status"
+                                defaultValue={status}
                                 pattern="active|deactivate"
                                 placeholder="either 'active' or 'deactivate"
                                 onChange={handleChange}
@@ -159,7 +166,7 @@ const AddStation = () => {
                             }
                         </div>
                         <div className='text-center font-semibold text-white col-span-2'>
-                            <button className='in-login w-full py-2 mb-2 uppercase tracking-wider cursor-pointer bg-[#ee0000] hover:bg-[#ff0000] rounded' type="submit" name="" id="">Add</button>
+                            <button className='in-login w-full py-2 mb-2 uppercase tracking-wider cursor-pointer bg-[#ee0000] hover:bg-[#ff0000] rounded' type="submit" name="" id="">Update</button>
                         </div>
                     </form>
                 </div>
@@ -168,4 +175,4 @@ const AddStation = () => {
     );
 };
 
-export default AddStation;
+export default UpdateStation;

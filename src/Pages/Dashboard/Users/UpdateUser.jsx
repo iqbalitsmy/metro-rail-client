@@ -1,7 +1,7 @@
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
@@ -116,7 +116,7 @@ const UpdateUser = () => {
 
     return (
         <section className='container mx-auto mb-16'>
-            <h1 className='text-2xl font-medium mt-6 mb-6'>Add New User</h1>
+            <h1 className='text-2xl font-medium mt-6 mb-6'>Update User Data</h1>
             <hr className='border-t border-[#e00] mb-10' />
             <div className='flex flex-col justify-center items-center'>
                 <div className='py-8 px-4 bg-white shadow-lg w-full md:w-2/4 lg:w-[30%]'>

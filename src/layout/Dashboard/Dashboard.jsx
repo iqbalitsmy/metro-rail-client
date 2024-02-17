@@ -60,12 +60,12 @@ const Dashboard = () => {
         fetchData()
     }, [setNumberOfRefund])
 
-    console.log(numberOfRefund);
+    // console.log(numberOfRefund);
 
     return (
         <>
             <section className='grid grid-cols-12 gap-8 min-h-screen'>
-                <aside className='col-span-3 px-4 space-y-6 shadow-md h-full'>
+                <aside className='col-span-3 px-4 space-y-6 shadow-md h-full bg-white'>
                     <figure className='h-16'>
                         <img className='h-full w-auto object-contain' src={logo} alt="" />
                     </figure>

@@ -1,17 +1,29 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import logo from '../../assets/logo/images.png'
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './Login.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import { UserContext } from '../../AuthProvider/UserProvider';
 
 const Login = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { user, isLoading } = useContext(UserContext);
+    const from = location.state?.from?.pathname || '/';
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [errors, setErrors] = useState({});
-    const [navigateToHome, setNavigateToHome] = useState(false);
+
+    useEffect(() => {
+        // if user already have than redirect
+        if (user.email && !isLoading) {
+            return navigate(from, { replace: true });
+        }
+    }, [user, isLoading]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,7 +42,7 @@ const Login = () => {
         }
 
         if (formData.password.length < 6) {
-            newErrors.password = 'Invalid mobile number or password';
+            newErrors.password = 'Invalid mobile email or password';
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -50,12 +62,19 @@ const Login = () => {
                     },
                     body: JSON.stringify(formData),
                 });
-                if (response) {
+                if (response.ok) {
                     console.log(response);
-                    setNavigateToHome(true)
+                    // navigate(from, { replace: true });
+                    window.location.reload();
+                } else {
+                    setErrors(
+                        {
+                            ...errors,
+                            password: 'Invalid mobile email or password',
+                        })
                 }
-            } catch (error) {
-                console.error('Error:', error);
+            } catch (err) {
+                console.error('Error:', err);
             }
             console.log('Form data submitted:', formData);
         }
@@ -122,7 +141,6 @@ const Login = () => {
                             REGISTER
                         </Link>
                     </div>
-                    {navigateToHome && <Navigate to="/" replace />}
                 </div>
             </div>
         </main>

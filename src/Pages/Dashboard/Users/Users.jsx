@@ -203,7 +203,7 @@ const Users = () => {
     // Edit and delete option
     const [open, setOpen] = useState(null);
 
-    // Station List data
+    // User List data
     useEffect(() => {
         const fetchData = async () => {
             // Make a GET request with cookies using fetch
@@ -240,56 +240,65 @@ const Users = () => {
     // Handle delete user
     const handleDelete = async (event, id) => {
         // setOpen(null);
-        console.log(id)
-        try {
-            const response = await fetch(`http://localhost:3001/api/v1/deleteUser/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header
-                },
+        // console.log(id)
 
-            });
-            const responseData = await response.json();
-            if (response.ok) {
-                console.log(responseData);
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "User delete successfully",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                window.location.reload(true)
-            } else {
-                console.error("Failed to delete user:", responseData.error);
-                Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: "Failed to delete user",
-                    text: "Pleas try again",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://localhost:3001/api/v1/deleteUser/${id}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json', // Set the Content-Type header
+                        },
+
+                    });
+                    const responseData = await response.json();
+                    if (response.ok) {
+                        console.log(responseData);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "User delete successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        window.location.reload(true)
+                    } else {
+                        console.error("Failed to delete user:", responseData.error);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Failed to delete user",
+                            text: "Pleas try again",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "Something is wrong",
+                        text: "Pleas try again",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
             }
-        } catch (error) {
-            console.error('Error:', error);
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Something is wrong",
-                text: "Pleas try again",
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
+        });
     }
 
     const handleBanned = async (event, id) => {
-        // setOpen(null);
-        console.log(id)
-        console.log(event)
-        console.log(event.target.innerText)
         try {
             const response = await fetch(`http://localhost:3001/api/v1/update/${id}`, {
                 method: 'PUT',
@@ -297,7 +306,7 @@ const Users = () => {
                 headers: {
                     'Content-Type': 'application/json', // Set the Content-Type header
                 },
-                body: JSON.stringify({status: event.target.innerText}),
+                body: JSON.stringify({ status: event.target.innerText }),
             });
             const responseData = await response.json();
             if (response.ok) {
@@ -451,7 +460,7 @@ const Users = () => {
                                             tabIndex={-1}
                                             key={row._id}
                                             selected={isItemSelected}
-                                            onClick={() => console.log(row._id)}
+                                        // onClick={() => console.log(row._id)}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
@@ -504,7 +513,6 @@ const Users = () => {
                                                 }}
                                             >
                                                 <MenuItem onClick={handleCloseMenu}>
-                                                    {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
                                                     <Link to={`${row._id}`}>
                                                         <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
                                                         Edit

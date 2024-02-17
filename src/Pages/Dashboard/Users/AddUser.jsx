@@ -2,7 +2,7 @@ import { useState } from 'react';
 import registerImg from "../../../assets/logo/images.png"
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import axios from 'axios';

@@ -3,7 +3,6 @@ import { Box, Button, Checkbox, CircularProgress, IconButton, Input, InputAdornm
 import { visuallyHidden } from '@mui/utils';
 import { alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { users } from '../../../utils/fakeUser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarsStaggered, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';

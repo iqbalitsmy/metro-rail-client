@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarsStaggered, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
+import Swal from 'sweetalert2';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -38,6 +38,7 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
+
 const headCells = [
     {
         id: 'name',
@@ -45,18 +46,18 @@ const headCells = [
         disablePadding: true,
         label: 'Station Name',
     },
-    {
-        id: 'stationSerial',
-        numeric: true,
-        disablePadding: false,
-        label: 'Station Serial',
-    },
-    {
-        id: 'time',
-        numeric: false,
-        disablePadding: false,
-        label: 'Time',
-    },
+    // {
+    //     id: 'stationSerial',
+    //     numeric: true,
+    //     disablePadding: false,
+    //     label: 'Station Serial',
+    // },
+    // {
+    //     id: 'time',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Time',
+    // },
     {
         id: 'location',
         numeric: true,
@@ -90,7 +91,7 @@ function EnhancedTableHead(props) {
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                         inputProps={{
-                            'aria-label': 'select all Train',
+                            'aria-label': 'select all desserts',
                         }}
                     />
                 </TableCell>
@@ -162,7 +163,7 @@ function EnhancedTableToolbar(props) {
                 >
                     <Input
                         id="input-with-icon-adornment"
-                        placeholder='Search Train...'
+                        placeholder='Search User...'
                         startAdornment={
                             <InputAdornment position="start">
                                 <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -195,35 +196,18 @@ EnhancedTableToolbar.propTypes = {
 
 
 
-
 const StationList = () => {
     const [station, setStation] = useState([]);
-    let rows;
 
     const [loading, setLoading] = useState(true);
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('status');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(15);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('status');
+    const [selected, setSelected] = useState([]);
+    const [page, setPage] = useState(0);
+    const [dense, setDense] = useState(false);
+    const [rowsPerPage, setRowsPerPage] = useState(15);
+    const [anchorEl, setAnchorEl] = useState(Array(station.length).fill(null));
 
-    // Edit and delete option
-    const [open, setOpen] = React.useState(null);
-
-    const handleOpenMenu = (event) => {
-        setOpen(event.currentTarget);
-    };
-
-    const handleCloseMenu = () => {
-        setOpen(null);
-    };
-
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
 
     // Station List data
     useEffect(() => {
@@ -241,24 +225,139 @@ const StationList = () => {
             }
         }
         fetchData()
-    }, [])
+    }, []);
 
-    function createData(id, name, location, stationSerial, status) {
-        return {
-            id,
-            name,
-            location,
-            stationSerial,
-            status,
-        };
+    const rows = [...station];
+
+    const handleOpenMenu = (event, index) => {
+        const newAnchorEl = [...anchorEl];
+        newAnchorEl[index] = event.currentTarget;
+        setAnchorEl(newAnchorEl);
+    };
+
+    const handleCloseMenu = (index) => {
+        const newAnchorEl = [...anchorEl];
+        newAnchorEl[index] = null;
+        setAnchorEl(newAnchorEl);
+    };
+
+
+    // Handle delete station
+    const handleDelete = async (event, id) => {
+        console.log(id)
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://localhost:3001/api/v1/delete-station/${id}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json', // Set the Content-Type header
+                        },
+
+                    });
+                    const responseData = await response.json();
+                    if (response.ok) {
+                        console.log(responseData);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Station delete successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        window.location.reload(true)
+                    } else {
+                        console.error("Failed to delete station:", responseData.error);
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Failed to delete station",
+                            text: "Pleas try again",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "Something is wrong",
+                        text: "Pleas try again",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
     }
-    rows = [...station.map(s => createData(s._id, s.name, s.location, s.stationSerial, s.status))]
 
-    console.log(rows)
+    const handleBanned = async (event, id) => {
+        console.log(id)
+        try {
+            const response = await fetch(`http://localhost:3001/api/v1/update-station/${id}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header
+                },
+                body: JSON.stringify({ status: event.target.innerText }),
+            });
+            const responseData = await response.json();
+            if (response.ok) {
+                console.log(responseData.user);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Station update successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.location.reload(true);
+            } else {
+                console.error("Failed to update station:", responseData.error);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Something is wrong",
+                    text: "Pleas try again",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Something is wrong",
+                text: "Pleas try again",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            // console.log('Form data submitted:', formData);
+        }
+    }
+
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = rows.map((n) => n._id);
             setSelected(newSelected);
             return;
         }
@@ -309,13 +408,19 @@ const StationList = () => {
     //     [order, orderBy, page, rowsPerPage],
     // );
 
-    // Calculate empty rows using Math.ceil
-    const emptyRows = Math.max(0, Math.ceil((1 + page) * rowsPerPage - station.length));
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const visibleRows = stableSort(station, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
+    const visibleRows = React.useMemo(
+        () =>
+            stableSort(rows, getComparator(order, orderBy)).slice(
+                page * rowsPerPage,
+                page * rowsPerPage + rowsPerPage,
+            ),
+        [order, orderBy, page, rowsPerPage, rows],
     );
+
     if (loading) {
         return <Box sx={{ display: 'flex' }}>
             <CircularProgress />
@@ -353,51 +458,54 @@ const StationList = () => {
                             />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
+                                    const isItemSelected = isSelected(row._id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
-                                        <Fragment key={row.name}>
-                                            <TableRow
-                                                hover
-                                                role="checkbox"
-                                                // aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.id}
-                                            // selected={isItemSelected}
-                                            // sx={{ cursor: 'pointer' }}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        onClick={(event) => handleClick(event, row.id)}
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        aria-checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell component="th" scope="row"
-                                                    id={labelId} padding="none">
-                                                    {row.name}
-                                                </TableCell>
-                                                <TableCell>{row.stationSerial}</TableCell>
-                                                <TableCell>08:00 AM to 08:00 PM</TableCell>
-                                                <TableCell>{row.location}</TableCell>
-                                                <TableCell>{row.status}</TableCell>
+                                        <TableRow
+                                            hover
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row._id}
+                                            selected={isItemSelected}
+                                        // onClick={() => console.log(row._id)}
+                                        >
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    onClick={(event) => handleClick(event, row._id)}
+                                                    color="primary"
+                                                    checked={isItemSelected}
+                                                    aria-checked={isItemSelected}
+                                                    inputProps={{
+                                                        'aria-labelledby': labelId,
+                                                    }}
+                                                />
+                                            </TableCell>
+                                            <TableCell component="th" scope="row"
+                                                id={labelId} padding="none">
+                                                {row.name}
+                                            </TableCell>
+                                            {/* <TableCell>{row.stationSerial}</TableCell> */}
+                                            {/* <TableCell>08:00 AM to 08:00 PM</TableCell> */}
+                                            <TableCell>{row.location}</TableCell>
+                                            <TableCell sx={{ fontSize: '18px' }}>
+                                                <p className={`text-base inline-block p-1 rounded-lg ${row.status == 'banned' ? 'text-red-900 bg-red-200' : 'text-green-900 bg-green-200'}`}>{row.status}</p>
+                                            </TableCell>
 
-                                                {/* Edit and delete options */}
-                                                <TableCell align="right">
-                                                    <IconButton onClick={handleOpenMenu}>
-                                                        ...
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
+                                            {/* Edit and delete options */}
+                                            <TableCell align="right" sx={{ fontSize: '18px' }}>
+                                                <IconButton onClick={(event) => handleOpenMenu(event, index)}>
+                                                    ...
+                                                </IconButton>
+                                            </TableCell>
                                             <Popover
-                                                open={!!open}
-                                                anchorEl={open}
-                                                onClose={handleCloseMenu}
+                                                // open={!!open}
+                                                // anchorEl={open}
+                                                // onClose={handleCloseMenu}
+                                                open={!!anchorEl[index]}
+                                                anchorEl={anchorEl[index]}
+                                                onClose={() => handleCloseMenu(index)}
                                                 anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                 PaperProps={{
@@ -405,19 +513,22 @@ const StationList = () => {
                                                 }}
                                             >
                                                 <MenuItem onClick={handleCloseMenu}>
-                                                    <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
-                                                    Edit
+                                                    <Link to={`${row._id}`}>
+                                                        <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
+                                                        Edit
+                                                    </Link>
                                                 </MenuItem>
-
-                                                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
+                                                <MenuItem onClick={(event) => handleDelete(event, row._id)} sx={{ color: 'error.main', }}>
                                                     <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
                                                     Delete
                                                 </MenuItem>
-                                                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main', }}>
-                                                    Deactivate
+                                                <MenuItem onClick={(event) => handleBanned(event, row._id)} sx={{ color: `${row.status === "banned" ? "" : "error.main"}`, }}>
+                                                    {
+                                                        row.status === "banned" ? "active" : "banned"
+                                                    }
                                                 </MenuItem>
                                             </Popover>
-                                        </Fragment>
+                                        </TableRow>
                                     );
                                 })}
                                 {emptyRows > 0 && (
