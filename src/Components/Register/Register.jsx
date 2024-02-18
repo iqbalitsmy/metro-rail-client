@@ -1,15 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Register.css'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
 import registerImg from '../../assets/register/register.svg'
-import { Button } from '@mui/material';
 import axios from 'axios';
 import { UserContext } from '../../AuthProvider/UserProvider';
+import Swal from 'sweetalert2';
 
-const today = dayjs();
 
 const Register = () => {
     const navigate = useNavigate();
@@ -124,8 +122,10 @@ const Register = () => {
         e.preventDefault();
         if (validateForm()) {
             setErrors({});
+            console.log("message")
             // Send the form data to the server or perform other actions
             try {
+                console.log("message2")
                 const response = await fetch('http://localhost:3001/api/v1/register', {
                     method: 'POST',
                     credentials: 'include',
@@ -136,8 +136,15 @@ const Register = () => {
                 });
                 if (response.ok) {
                     console.log(response);
-                    window.location.reload();
+                    return window.location.reload();
                 }
+                const data = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${data.message}!!`,
+                    footer: 'Please try again'
+                });
             } catch (err) {
                 console.error('Error:', err);
             }

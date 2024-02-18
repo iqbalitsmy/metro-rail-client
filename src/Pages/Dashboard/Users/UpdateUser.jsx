@@ -155,11 +155,8 @@ const UpdateUser = () => {
                                     className='in-register rounded pl-3 py-3 w-full placeholder:text-gray-500 placeholder:text-lg'
                                     type="password"
                                     name="password" id="password"
-                                    value={password}
-                                    readOnly
                                     placeholder='Password'
                                     onChange={handleChange}
-                                    required
                                 />
                                 {
                                     errors?.password && <span className='text-red-600'>{errors?.password}</span>
@@ -180,30 +177,22 @@ const UpdateUser = () => {
                                     errors?.role && <span className='text-red-600'>{errors?.role}</span>
                                 }
                             </div>
-                            <div className='grid grid-cols-2 w-full gap-2'>
-                                <div className='flex flex-col w-full'>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker
-                                            name="dateOfBirth" id="dateOfBirth"
-                                            disableFuture
-                                            inputFormat="MMM dd, yyyy"
-                                            disableMaskedInput={true}
-                                            defaultValue={dayjs(dateOfBirth)}
-                                            // value={dayjs(dateOfBirth, 'DD/MM/YYYY')}
-                                            onChange={handleDateChange}
-                                            className='in-search-train rounded pl-3 py-1 w-full'
-                                        />
-                                    </LocalizationProvider>
-                                    {
-                                        errors?.dateOfBirth && <span className='text-red-600'>{errors?.dateOfBirth}</span>
-                                    }
-                                </div>
-                                <div>
-                                    Upload Profile
-                                    <input
-                                        type="file"
+                            <div className='w-full gap-2'>
+                                <LocalizationProvider className="w-full" dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        name="dateOfBirth" id="dateOfBirth"
+                                        disableFuture
+                                        inputFormat="MMM dd, yyyy"
+                                        disableMaskedInput={true}
+                                        defaultValue={dayjs(dateOfBirth)}
+                                        // value={dayjs(dateOfBirth, 'DD/MM/YYYY')}
+                                        onChange={handleDateChange}
+                                        className='in-search-train rounded pl-3 py-1 w-full'
                                     />
-                                </div>
+                                </LocalizationProvider>
+                                {
+                                    errors?.dateOfBirth && <span className='text-red-600'>{errors?.dateOfBirth}</span>
+                                }
                             </div>
                         </div>
                         <div className='w-full text-center font-semibold text-white bg-[#e00] hover:bg-[#f00] py-2 rounded-md mb-8'>

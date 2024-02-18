@@ -5,7 +5,6 @@ import logo from '../../assets/logo/images.png'
 import { UserContext } from '../../AuthProvider/UserProvider';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import avatar from '../../assets/profile.avif'
 import { Menu, MenuItem } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -127,7 +126,6 @@ const Navigationbar = () => {
                                 >
                                     <MenuItem onClick={handleClose}>{user.name}</MenuItem>
                                     <MenuItem onClick={handleClose}>{user.email}</MenuItem>
-                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
                                     <Link to={'/profile/tickets'}>
                                         <MenuItem onClick={handleClose}>My Tickets</MenuItem>
                                     </Link>

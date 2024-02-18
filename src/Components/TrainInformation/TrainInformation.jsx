@@ -162,10 +162,12 @@ const TrainInformation = () => {
         } else {
             setToStation([]); // Handle the case when newValue is null
         }
+        localStorage.removeItem('searchTrain');
     };
 
     const handleToAutocompleteChange = (event, newValue) => {
         setToSelectedValue(newValue);
+        localStorage.removeItem('searchTrain');
     };
 
     const handleNumOfTickets = (event) => {

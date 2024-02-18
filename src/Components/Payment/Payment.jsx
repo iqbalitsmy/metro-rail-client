@@ -1,7 +1,6 @@
-import { Typography } from '@mui/material';
-import { CardCvcElement, CardExpiryElement, CardNumberElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
+import { CardCvcElement, CardExpiryElement, CardNumberElement,  useElements, useStripe } from '@stripe/react-stripe-js';
 import axios from 'axios';
-import { Fragment, useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { UserContext } from '../../AuthProvider/UserProvider';
 import { loadStripe } from '@stripe/stripe-js';
 import "./Payment.css"

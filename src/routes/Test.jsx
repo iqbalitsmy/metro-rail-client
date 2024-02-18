@@ -1,14 +1,14 @@
-import { Avatar, Box, Button, Checkbox, CircularProgress, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Checkbox, CircularProgress, IconButton, Input, InputAdornment, MenuItem, Paper, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Tooltip, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBarsStaggered, faCircleCheck, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBarsStaggered, faEnvelope, faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
-
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -67,13 +67,13 @@ const headCells = [
         id: 'date',
         numeric: true,
         disablePadding: false,
-        label: 'Travel Date',
+        label: 'Date',
     },
     {
         id: 'time',
         numeric: true,
         disablePadding: false,
-        label: 'Travel Time',
+        label: 'Time',
     },
     {
         id: 'paymentStatus',
@@ -81,25 +81,11 @@ const headCells = [
         disablePadding: false,
         label: 'Payment Status',
     },
-    {
-        id: 'paymentMethod',
-        numeric: true,
-        disablePadding: false,
-        label: 'Payment Method',
-    },
-    {
-        id: 'PaymentNum',
-        numeric: true,
-        disablePadding: false,
-        label: 'Mobile Number',
-    },
 ];
 
 // Table header
-
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-        props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -108,7 +94,7 @@ function EnhancedTableHead(props) {
         <TableHead>
             <TableRow>
                 <TableCell padding="checkbox">
-                    {/* <Checkbox
+                    <Checkbox
                         color="primary"
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
@@ -116,12 +102,11 @@ function EnhancedTableHead(props) {
                         inputProps={{
                             'aria-label': 'select all desserts',
                         }}
-                    /> */}
+                    />
                 </TableCell>
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        // align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
@@ -153,9 +138,8 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-
 function EnhancedTableToolbar(props) {
-    const { numSelected } = props;
+    const { numSelected, handleSearchChange } = props;
 
     return (
         <Toolbar
@@ -187,6 +171,7 @@ function EnhancedTableToolbar(props) {
                     <Input
                         id="input-with-icon-adornment"
                         placeholder='Search User...'
+                        onChange={handleSearchChange}
                         startAdornment={
                             <InputAdornment position="start">
                                 <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -196,7 +181,13 @@ function EnhancedTableToolbar(props) {
                 </Typography>
             )}
 
-            {(
+            {numSelected > 0 ? (
+                <Tooltip title="Delete">
+                    <IconButton>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                    </IconButton>
+                </Tooltip>
+            ) : (
                 <Tooltip title="Filter list">
                     <IconButton>
                         <FontAwesomeIcon icon={faBarsStaggered} />
@@ -211,9 +202,8 @@ EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 };
 
-const TicketRefund = () => {
-
-    const [refundTickets, setRefundTickets] = useState([]);
+const Test = () => {
+    const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('status');
@@ -221,30 +211,22 @@ const TicketRefund = () => {
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(15);
-    const [anchorEl, setAnchorEl] = useState(Array(refundTickets.length).fill(null));
+    const [anchorEl, setAnchorEl] = useState(Array(tickets.length).fill(null));
+    const [searchInput, setSearchInput] = useState('');
 
-    // Station List data
     useEffect(() => {
         const fetchData = async () => {
-            // Make a GET request with cookies using fetch
             try {
-                const response = await axios.get('http://localhost:3001/api/v1/cancel-tickets', { withCredentials: true });
-                // console.log(response.data);
-                setRefundTickets(response.data);
+                const response = await axios.get('http://localhost:3001/api/v1/tickets', { withCredentials: true });
+                setTickets(response.data);
                 setLoading(false);
             } catch (error) {
-                // setError(error.message || 'An error occurred');
                 console.log("Error :", error)
                 setLoading(false);
             }
         }
         fetchData()
     }, [])
-
-    const rows = [...refundTickets];
-
-    // console.log(rows)
-
     const handleOpenMenu = (event, index) => {
         const newAnchorEl = [...anchorEl];
         newAnchorEl[index] = event.currentTarget;
@@ -257,52 +239,12 @@ const TicketRefund = () => {
         setAnchorEl(newAnchorEl);
     };
 
-    // Handle refund ticket
-    const handleRefund = async (event, id, msg) => {
-        console.log(id)
-        try {
-            const response = await fetch(`http://localhost:3001/api/v1/refund-request/${id}`, {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header
-                },
-                body: JSON.stringify({ payment: msg }),
-            });
-            const responseData = await response.json();
-            console.log(responseData)
-            if (response.ok) {
-                console.log(responseData);
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Payment status update successfully",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                window.location.reload(true)
-            } else {
-                console.error("Failed to update payment status:", responseData.error);
-                Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: "Failed to update payment status",
-                    text: "Pleas try again",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Something is wrong",
-                text: "Pleas try again",
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
+    const handleSearchChange = (event) => {
+        setSearchInput(event.target.value);
+    };
+
+    const searchUser = () => {
+        return tickets.filter(ticket => ticket.userName.toLowerCase().includes(searchInput.toLowerCase()));
     }
 
     const handleRequestSort = (event, property) => {
@@ -348,59 +290,49 @@ const TicketRefund = () => {
         setPage(0);
     };
 
-
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets.length) : 0;
 
     const visibleRows = React.useMemo(
         () =>
-            stableSort(rows, getComparator(order, orderBy)).slice(
+            stableSort(searchInput ? searchUser() : tickets, getComparator(order, orderBy)).slice(
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage, rows],
+        [order, orderBy, page, rowsPerPage, searchInput, tickets],
     );
 
-    // console.log(visibleRows)
-
-    // // Calculate empty rows using Math.ceil
-    // const emptyRows = Math.max(0, Math.ceil((1 + page) * rowsPerPage - users.length));
-
-    // const visibleRows = stableSort(users, getComparator(order, orderBy)).slice(
-    //     page * rowsPerPage,
-    //     page * rowsPerPage + rowsPerPage,
-    // );
     if (loading) {
         return <Box sx={{ display: 'flex' }}>
             <CircularProgress />
-        </Box>; // Display a loading indicator
+        </Box>;
     }
 
     return (
         <section className='mt-10'>
             <div className='flex justify-between mb-4'>
-                <h2 className='text-2xl font-bold'>Refund Request Tickets</h2>
+                <h2 className='text-2xl font-bold'>Tickets</h2>
+                <Button variant="contained" className='' sx={{ fontSize: "18px", bgcolor: '#000' }}>
+                    <Link to={"add-tickets"}>
+                        <FontAwesomeIcon className='mr-2' icon={faPlus} />
+                        New Tickets
+                    </Link>
+                </Button>
             </div>
 
             <Box className="" sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <EnhancedTableToolbar numSelected={selected.length} />
+                    <EnhancedTableToolbar numSelected={selected.length} handleSearchChange={handleSearchChange} />
                     <TableContainer>
-                        <Table
-                            // sx={{ minWidth: 750 }}
-                            aria-labelledby="tableTitle"
-                            size={dense ? 'small' : 'medium'}
-                        >
+                        <Table aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
                             <EnhancedTableHead
                                 numSelected={selected.length}
                                 order={order}
                                 orderBy={orderBy}
                                 onSelectAllClick={handleSelectAllClick}
                                 onRequestSort={handleRequestSort}
-                                rowCount={rows.length}
+                                rowCount={tickets.length}
                             />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
@@ -415,9 +347,10 @@ const TicketRefund = () => {
                                             tabIndex={-1}
                                             key={row._id}
                                             selected={isItemSelected}
+                                            onClick={() => console.log(row._id)}
                                         >
                                             <TableCell padding="checkbox">
-                                                {/* <Checkbox
+                                                <Checkbox
                                                     onClick={(event) => handleClick(event, row._id)}
                                                     color="primary"
                                                     checked={isItemSelected}
@@ -425,62 +358,53 @@ const TicketRefund = () => {
                                                     inputProps={{
                                                         'aria-labelledby': labelId,
                                                     }}
-                                                /> */}
+                                                />
                                             </TableCell>
-                                            {/* name column avatar and name */}
-                                            <TableCell component="th" scope="row"
-                                                id={labelId} padding="none">
+                                            <TableCell component="th" scope="row" id={labelId} padding="none">
                                                 {row.userName}
                                             </TableCell>
-                                            {/* <TableCell align="right">{row.role}</TableCell> */}
                                             <TableCell sx={{ fontSize: '18px' }}>{row.fromStation}</TableCell>
                                             <TableCell sx={{ fontSize: '18px' }}>{row.toStation}</TableCell>
                                             <TableCell sx={{ fontSize: '18px' }}>{row.price}</TableCell>
                                             <TableCell sx={{ fontSize: '18px' }}>{dayjs(row.purchaseDate).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell sx={{ fontSize: '18px' }}>{dayjs(row.time).format('h:mm A')}</TableCell>
                                             <TableCell sx={{ fontSize: '18px' }}>{row.payment}</TableCell>
-                                            <TableCell sx={{ fontSize: '18px' }}>{row.refundPaymentMethods}</TableCell>
-                                            <TableCell sx={{ fontSize: '18px' }}>{row.refundPaymentMobNumb}</TableCell>
-
-                                            {/* Edit and delete options */}
                                             <TableCell align="right" sx={{ fontSize: '18px' }}>
                                                 <IconButton onClick={(event) => handleOpenMenu(event, index)}>
                                                     ...
                                                 </IconButton>
                                             </TableCell>
                                             <Popover
-                                                // open={!!open}
-                                                // anchorEl={open}
-                                                // onClose={handleCloseMenu}
                                                 open={!!anchorEl[index]}
                                                 anchorEl={anchorEl[index]}
                                                 onClose={() => handleCloseMenu(index)}
                                                 anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                 PaperProps={{
-                                                    sx: { width: 180, boxShadow: '0 2px 10px rgba(5, 5, 5, 0.1)' },
+                                                    sx: { width: 140, boxShadow: '0 2px 10px rgba(5, 5, 5, 0.1)' },
                                                 }}
                                             >
-                                                <MenuItem onClick={(event) => handleRefund(event, row._id, "accept refund")}>
-                                                    {/* <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} /> */}
-                                                    <FontAwesomeIcon className='mr-2' icon={faCircleCheck} />
-                                                    Accept Refund
+                                                <MenuItem onClick={handleCloseMenu}>
+                                                    <Link to={`${row._id}`}>
+                                                        <FontAwesomeIcon className='mr-2' icon={faPenToSquare} />
+                                                        Edit
+                                                    </Link>
                                                 </MenuItem>
-                                                <MenuItem onClick={(event) => handleRefund(event, row._id, "reject refund")} sx={{ color: 'error.main', }}>
-                                                    <FontAwesomeIcon className='mr-2' icon={faXmark} />
-                                                    Reject Refund
+                                                <MenuItem onClick={(event) => handleDelete(event, row._id)} sx={{ color: 'error.main', }}>
+                                                    <FontAwesomeIcon className='mr-2' icon={faTrashCan} />
+                                                    Delete
+                                                </MenuItem>
+                                                <MenuItem onClick={(event) => handleSendMail(event, row._id)}>
+                                                    <FontAwesomeIcon className='mr-2' icon={faEnvelope} />
+                                                    Send Tickets
                                                 </MenuItem>
                                             </Popover>
                                         </TableRow>
                                     );
                                 })}
                                 {emptyRows > 0 && (
-                                    <TableRow
-                                        style={{
-                                            height: (dense ? 33 : 53) * emptyRows,
-                                        }}
-                                    >
-                                        <TableCell colSpan={6} />
+                                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                                        <TableCell colSpan={8} />
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -489,7 +413,7 @@ const TicketRefund = () => {
                     <TablePagination
                         rowsPerPageOptions={[15, 20, 25, 30]}
                         component="div"
-                        count={rows.length}
+                        count={tickets.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -497,9 +421,8 @@ const TicketRefund = () => {
                     />
                 </Paper>
             </Box>
-
         </section>
     );
 };
 
-export default TicketRefund;
+export default Test;

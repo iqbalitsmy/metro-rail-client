@@ -25,6 +25,8 @@ import UpdateTickets from "../Pages/Dashboard/Tickets/UpdateTickets";
 import TicketRefund from "../Pages/Dashboard/TicketRefund/TicketRefund";
 import RequestForRefund from "../Pages/Profile/RequestForRefund/RequestForRefund";
 import UpdateStation from "../Pages/Dashboard/Dashboard/StationList/UpdateStation";
+import Test from "./Test";
+import PrivateRoute from "./PrivateRoute";
 
 
 const router = createBrowserRouter([
@@ -46,7 +48,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile></Profile>,
+        element: <PrivateRoute><Profile></Profile></PrivateRoute>,
         children: [
           {
             path: "tickets",
@@ -77,10 +79,6 @@ const router = createBrowserRouter([
         path: "/contact-us",
         element: <ContactUs></ContactUs>
       },
-      {
-        path: "/process/payment",
-        element: <Payment />
-      },
     ]
   },
   {
@@ -92,7 +90,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <Dashboard></Dashboard>,
+    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
     children: [
       {
         path: "dashboard",
@@ -180,6 +178,10 @@ const router = createBrowserRouter([
       {
         path: "refund-tickets",
         element: <TicketRefund />
+      },
+      {
+        path: "test",
+        element: <Test />
       },
     ]
   }

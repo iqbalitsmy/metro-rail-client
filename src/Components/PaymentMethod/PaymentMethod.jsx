@@ -1,4 +1,3 @@
-import React from 'react';
 import bkash  from '../../assets/home/bkash.png'
 import masterCard  from '../../assets/home/master-card.png'
 import nagad  from '../../assets/home/nagad.png'
